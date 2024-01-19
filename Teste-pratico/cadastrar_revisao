@@ -1,0 +1,58 @@
+<?php
+include 'conexao.php';
+
+// Verifica se o formulário foi submetido
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $id_veiculo = $_POST["id_veiculo"];
+    $data_revisao = $_POST["data_revisao"];
+    $teve_revisao = isset($_POST["teve_revisao"]) ? 1 : 0;
+
+    // Verificar se o veículo com o ID fornecido existe
+    $sql_verificar_veiculo = "SELECT * FROM veiculos WHERE id_veiculo = $id_veiculo";
+    $result_verificar_veiculo = $conn->query($sql_verificar_veiculo);
+
+    if ($result_verificar_veiculo->num_rows > 0) {
+        // Inserir dados na tabela 'revisoes'
+        $sql = "INSERT INTO revisoes (id_veiculo, data_revisao, teve_revisao) VALUES ($id_veiculo, '$data_revisao', $teve_revisao)";
+        
+        if ($conn->query($sql) === TRUE) {
+            header("Location: list_revisoes.php");
+            exit();
+        } else {
+            echo "Erro: " . $conn->error;
+        }
+    } else {
+        echo "Erro: Veículo com ID $id_veiculo não encontrado.";
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Revisão</title>
+    <!-- Aqui você pode adicionar qualquer outro conteúdo do cabeçalho que for necessário -->
+</head>
+<body>
+
+<h2>Cadastrar Revisão</h2>
+
+<!-- Formulário de cadastro de revisão -->
+<form action="cadastrar_revisao.php" method="POST">
+    <label for="id_veiculo">ID do Veículo:</label>
+    <input type="number" name="id_veiculo" required>
+
+    <label for="data_revisao">Data da Revisão:</label>
+    <input type="date" name="data_revisao" required>
+
+    <label for="teve_revisao">Teve Revisão?</label>
+    <input type="checkbox" name="teve_revisao">
+
+    <button type="submit">Cadastrar</button>
+</form>
+
+</body>
+</html>
+
